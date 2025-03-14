@@ -337,13 +337,13 @@ run_clone_run()
 {
 set +
 	oraclesid=$ORACLE_SID
-	echo Pairsfile is "/stage/dbascripts/clone/r122/pairs/${oraclesid}_addnode_pairsfile_adminnode.txt"
+	echo Pairsfile is "$exe_home/pairs/${oraclesid}_addnode_pairsfile_adminnode.txt"
         export TEMP=/var/tmp
         export PATH=$PATH:/usr/ucb:/usr/ccs/bin
 	export TIMEDPROCESS_TIMEOUT=-1
         export CONFIG_JVM_ARGS="-Xms1024m -Xmx2048m -XX:-UseGCOverheadLimit"
 	cd $g_base/fs1/EBSapps/comn/clone/bin
-	{ echo $g_appspw; echo $g_wls_admin; }|perl adcfgclone.pl component=appsTier pairsfile=/stage/dbascripts/clone/r122/pairs/${oraclesid}_addnode_pairsfile_adminnode.txt addnode=no 
+	{ echo $g_appspw; echo $g_wls_admin; }|perl adcfgclone.pl component=appsTier pairsfile=$exe_home/pairs/${oraclesid}_addnode_pairsfile_adminnode.txt addnode=no 
 	check_status $? "Admin Node Clone Run"
 }
 
@@ -398,7 +398,7 @@ EOF
 run_pre_clone()
 {
 	echo Running Preclone....
-	/stage/dbascripts/clone/r122/run_preclone_appl_r122.sh $g_appspw $g_wls_admin
+	$exe_home/run_preclone_appl_r122.sh $g_appspw $g_wls_admin
 	check_status $? "Running Pre-clone"
 }
 
@@ -422,14 +422,14 @@ add_middle_tier_test()
         contextfile=$CONTEXT_FILE
         if [ $oraclesid = 'RMTEST19' ] || [ $oraclesid = 'RMTEST18' ] || [ $oraclesid = 'RMTEST24' ] || [ $oraclesid = 'RMTEST26' ]
         then
-                ssh $LOGNAME@sop-ps-dsapp5 ". /home/$LOGNAME/.profile;/stage/dbascripts/clone/r122/appl_mt_clone_r122.sh $g_appspw $g_wls_admin $g_fs $g_appl_top $contextfile /stage/dbascripts/clone/r122/pairs/$oraclesid"_addnode_pairsfile_node1.txt" $oraclesid $g_base"
+                ssh $LOGNAME@sop-ps-dsapp5 ". /home/$LOGNAME/.profile;$exe_home/appl_mt_clone_r122.sh $g_appspw $g_wls_admin $g_fs $g_appl_top $contextfile $exe_home/pairs/$oraclesid"_addnode_pairsfile_node1.txt" $oraclesid $g_base"
                 check_status $? "Add Node 1"
-                ssh $LOGNAME@sop-ps-dsapp6 ". /home/$LOGNAME/.profile;/stage/dbascripts/clone/r122/appl_mt_clone_r122.sh $g_appspw $g_wls_admin $g_fs $g_appl_top $contextfile /stage/dbascripts/clone/r122/pairs/$oraclesid"_addnode_pairsfile_node2.txt" $oraclesid $g_base"
+                ssh $LOGNAME@sop-ps-dsapp6 ". /home/$LOGNAME/.profile;$exe_home/appl_mt_clone_r122.sh $g_appspw $g_wls_admin $g_fs $g_appl_top $contextfile $exe_home/pairs/$oraclesid"_addnode_pairsfile_node2.txt" $oraclesid $g_base"
                 check_status $? "Add Node 2"
         else
-                ssh $LOGNAME@dwp-ps-dapp1 ". /home/$LOGNAME/.profile;/stage/dbascripts/clone/r122/appl_mt_clone_r122.sh $g_appspw $g_wls_admin $g_fs $g_appl_top $contextfile /stage/dbascripts/clone/r122/pairs/$oraclesid"_addnode_pairsfile_node1.txt" $oraclesid $g_base"
+                ssh $LOGNAME@dwp-ps-dapp1 ". /home/$LOGNAME/.profile;$exe_home/appl_mt_clone_r122.sh $g_appspw $g_wls_admin $g_fs $g_appl_top $contextfile $exe_home/pairs/$oraclesid"_addnode_pairsfile_node1.txt" $oraclesid $g_base"
                 check_status $? "Add Node 1"
-                ssh $LOGNAME@dwp-ps-dapp2 ". /home/$LOGNAME/.profile;/stage/dbascripts/clone/r122/appl_mt_clone_r122.sh $g_appspw $g_wls_admin $g_fs $g_appl_top $contextfile /stage/dbascripts/clone/r122/pairs/$oraclesid"_addnode_pairsfile_node2.txt" $oraclesid $g_base"
+                ssh $LOGNAME@dwp-ps-dapp2 ". /home/$LOGNAME/.profile;$exe_home/appl_mt_clone_r122.sh $g_appspw $g_wls_admin $g_fs $g_appl_top $contextfile $exe_home/pairs/$oraclesid"_addnode_pairsfile_node2.txt" $oraclesid $g_base"
                 check_status $? "Add Node 2"
         fi
 }
@@ -448,7 +448,7 @@ add_middle_tier_trn()
 	then
 		mt_appserver=dwp-dr-nrap2
 	fi
-	ssh $LOGNAME@${mt_appserver} ". /home/$LOGNAME/.profile;/stage/dbascripts/clone/r122/appl_mt_clone_r122.sh $g_appspw $g_wls_admin $g_fs $g_appl_top $contextfile /stage/dbascripts/clone/r122/pairs/$oraclesid"_addnode_pairsfile_node1.txt" $oraclesid $g_base"
+	ssh $LOGNAME@${mt_appserver} ". /home/$LOGNAME/.profile;$exe_home/appl_mt_clone_r122.sh $g_appspw $g_wls_admin $g_fs $g_appl_top $contextfile $exe_home/pairs/$oraclesid"_addnode_pairsfile_node1.txt" $oraclesid $g_base"
 	check_status $? "Add Node 1"
 }
 
@@ -456,9 +456,9 @@ add_middle_tier_ple()
 {
 	oraclesid=$ORACLE_SID
 	contextfile=$CONTEXT_FILE
-	ssh $LOGNAME@sop-pl-dsapp3 ". /home/$LOGNAME/.profile;/stage/dbascripts/clone/r122/appl_mt_clone_r122.sh $g_appspw $g_wls_admin $g_fs $g_appl_top $contextfile /stage/dbascripts/clone/r122/pairs/$oraclesid"_addnode_pairsfile_node1.txt" $oraclesid $g_base"
+	ssh $LOGNAME@sop-pl-dsapp3 ". /home/$LOGNAME/.profile;$exe_home/appl_mt_clone_r122.sh $g_appspw $g_wls_admin $g_fs $g_appl_top $contextfile $exe_home/pairs/$oraclesid"_addnode_pairsfile_node1.txt" $oraclesid $g_base"
 	check_status $? "Add Node 1"
-	ssh $LOGNAME@sop-pl-dsapp4 ". /home/$LOGNAME/.profile;/stage/dbascripts/clone/r122/appl_mt_clone_r122.sh $g_appspw $g_wls_admin $g_fs $g_appl_top $contextfile /stage/dbascripts/clone/r122/pairs/$oraclesid"_addnode_pairsfile_node2.txt" $oraclesid $g_base"
+	ssh $LOGNAME@sop-pl-dsapp4 ". /home/$LOGNAME/.profile;$exe_home/appl_mt_clone_r122.sh $g_appspw $g_wls_admin $g_fs $g_appl_top $contextfile $exe_home/pairs/$oraclesid"_addnode_pairsfile_node2.txt" $oraclesid $g_base"
 	check_status $? "Add Node 2"
 }
 
@@ -466,13 +466,13 @@ add_middle_tier_pte2()
 {
 	oraclesid=$ORACLE_SID
 	contextfile=$CONTEXT_FILE
-	ssh $LOGNAME@dwp-pt-dapp1 ". /home/$LOGNAME/.profile;/stage/dbascripts/clone/r122/appl_mt_clone_r122.sh $g_appspw $g_wls_admin $g_fs $g_appl_top $contextfile /stage/dbascripts/clone/r122/pairs/$oraclesid"_addnode_pairsfile_node1.txt" $oraclesid $g_base"
+	ssh $LOGNAME@dwp-pt-dapp1 ". /home/$LOGNAME/.profile;$exe_home/appl_mt_clone_r122.sh $g_appspw $g_wls_admin $g_fs $g_appl_top $contextfile $exe_home/pairs/$oraclesid"_addnode_pairsfile_node1.txt" $oraclesid $g_base"
 	check_status $? "Add Node 1"
-	ssh $LOGNAME@dwp-pt-dapp2 ". /home/$LOGNAME/.profile;/stage/dbascripts/clone/r122/appl_mt_clone_r122.sh $g_appspw $g_wls_admin $g_fs $g_appl_top $contextfile /stage/dbascripts/clone/r122/pairs/$oraclesid"_addnode_pairsfile_node2.txt" $oraclesid $g_base"
+	ssh $LOGNAME@dwp-pt-dapp2 ". /home/$LOGNAME/.profile;$exe_home/appl_mt_clone_r122.sh $g_appspw $g_wls_admin $g_fs $g_appl_top $contextfile $exe_home/pairs/$oraclesid"_addnode_pairsfile_node2.txt" $oraclesid $g_base"
 	check_status $? "Add Node 2"
-	ssh $LOGNAME@dwp-pt-dapp3 ". /home/$LOGNAME/.profile;/stage/dbascripts/clone/r122/appl_mt_clone_r122.sh $g_appspw $g_wls_admin $g_fs $g_appl_top $contextfile /stage/dbascripts/clone/r122/pairs/$oraclesid"_addnode_pairsfile_node3.txt" $oraclesid $g_base"
+	ssh $LOGNAME@dwp-pt-dapp3 ". /home/$LOGNAME/.profile;$exe_home/appl_mt_clone_r122.sh $g_appspw $g_wls_admin $g_fs $g_appl_top $contextfile $exe_home/pairs/$oraclesid"_addnode_pairsfile_node3.txt" $oraclesid $g_base"
 	check_status $? "Add Node 3"
-	ssh $LOGNAME@dwp-pt-dapp4 ". /home/$LOGNAME/.profile;/stage/dbascripts/clone/r122/appl_mt_clone_r122.sh $g_appspw $g_wls_admin $g_fs $g_appl_top $contextfile /stage/dbascripts/clone/r122/pairs/$oraclesid"_addnode_pairsfile_node4.txt" $oraclesid $g_base"
+	ssh $LOGNAME@dwp-pt-dapp4 ". /home/$LOGNAME/.profile;$exe_home/appl_mt_clone_r122.sh $g_appspw $g_wls_admin $g_fs $g_appl_top $contextfile $exe_home/pairs/$oraclesid"_addnode_pairsfile_node4.txt" $oraclesid $g_base"
 	check_status $? "Add Node 4"
 }
 
@@ -480,13 +480,13 @@ add_middle_tier_pte()
 {
 	oraclesid=$ORACLE_SID
 	contextfile=$CONTEXT_FILE
-	ssh $LOGNAME@dwp-dr-napp1 ". /home/$LOGNAME/.profile;/stage/dbascripts/clone/r122/appl_mt_clone_r122.sh $g_appspw $g_wls_admin $g_fs $g_appl_top $contextfile /stage/dbascripts/clone/r122/pairs/$oraclesid"_addnode_pairsfile_node1.txt" $oraclesid $g_base"
+	ssh $LOGNAME@dwp-dr-napp1 ". /home/$LOGNAME/.profile;$exe_home/appl_mt_clone_r122.sh $g_appspw $g_wls_admin $g_fs $g_appl_top $contextfile $exe_home/pairs/$oraclesid"_addnode_pairsfile_node1.txt" $oraclesid $g_base"
 	check_status $? "Add Node 1"
-	ssh $LOGNAME@dwp-dr-napp2 ". /home/$LOGNAME/.profile;/stage/dbascripts/clone/r122/appl_mt_clone_r122.sh $g_appspw $g_wls_admin $g_fs $g_appl_top $contextfile /stage/dbascripts/clone/r122/pairs/$oraclesid"_addnode_pairsfile_node2.txt" $oraclesid $g_base"
+	ssh $LOGNAME@dwp-dr-napp2 ". /home/$LOGNAME/.profile;$exe_home/appl_mt_clone_r122.sh $g_appspw $g_wls_admin $g_fs $g_appl_top $contextfile $exe_home/pairs/$oraclesid"_addnode_pairsfile_node2.txt" $oraclesid $g_base"
 	check_status $? "Add Node 2"
-	ssh $LOGNAME@dwp-dr-napp3 ". /home/$LOGNAME/.profile;/stage/dbascripts/clone/r122/appl_mt_clone_r122.sh $g_appspw $g_wls_admin $g_fs $g_appl_top $contextfile /stage/dbascripts/clone/r122/pairs/$oraclesid"_addnode_pairsfile_node3.txt" $oraclesid $g_base"
+	ssh $LOGNAME@dwp-dr-napp3 ". /home/$LOGNAME/.profile;$exe_home/appl_mt_clone_r122.sh $g_appspw $g_wls_admin $g_fs $g_appl_top $contextfile $exe_home/pairs/$oraclesid"_addnode_pairsfile_node3.txt" $oraclesid $g_base"
 	check_status $? "Add Node 3"
-	ssh $LOGNAME@dwp-dr-napp4 ". /home/$LOGNAME/.profile;/stage/dbascripts/clone/r122/appl_mt_clone_r122.sh $g_appspw $g_wls_admin $g_fs $g_appl_top $contextfile /stage/dbascripts/clone/r122/pairs/$oraclesid"_addnode_pairsfile_node4.txt" $oraclesid $g_base"
+	ssh $LOGNAME@dwp-dr-napp4 ". /home/$LOGNAME/.profile;$exe_home/appl_mt_clone_r122.sh $g_appspw $g_wls_admin $g_fs $g_appl_top $contextfile $exe_home/pairs/$oraclesid"_addnode_pairsfile_node4.txt" $oraclesid $g_base"
 	check_status $? "Add Node 4"
 }
 
@@ -531,7 +531,7 @@ EOF`
 change_apps_pw()
 {
 	echo "Running change_apps_passwords " $ORACLE_SID $g_appspw $g_syspw $g_wls_admin $g_new_appspw_number
-	/stage/dbascripts/clone/r122/change_apps_pw.sh $ORACLE_SID $g_appspw $g_syspw $g_wls_admin $g_new_appspw_number
+	$exe_home/change_apps_pw.sh $ORACLE_SID $g_appspw $g_syspw $g_wls_admin $g_new_appspw_number
 	test_apps $g_new_appspw
 }
 
@@ -583,6 +583,7 @@ run_appl_clone()
 }
 
 usage $@
+exe_home=<set home location>
 g_user_type=
 g_pp=
 user_type
@@ -591,7 +592,7 @@ determine_base
 g_appl_top=$g_base/$g_fs/EBSapps/appl
 g_server=`uname -a|awk '{print $2}'`
 g_script=`basename $0`
-g_lockfile=/stage/dbascripts/clone/r122/logs/.${g_script}_${ORACLE_SID}_${g_server}.lok
+g_lockfile=$exe_home/logs/.${g_script}_${ORACLE_SID}_${g_server}.lok
 check_lockfile
 g_new_appspw="apps"$g_new_appspw_number
 echo New Apps Password will be $g_new_appspw
@@ -600,7 +601,7 @@ g_backupdir=/home/$LOGNAME/AppClone
 g_contextfile=$g_backupdir/$ORACLE_SID"_"$g_server.xml
 g_env="$g_base/EBSapps.env run"
 dt=`date -u +%d%m%y%H%M%S`
-g_log="/stage/dbascripts/clone/r122/logs/"$ORACLE_SID"_clone_admin_"$dt.log
+g_log="$exe_home/logs/"$ORACLE_SID"_clone_admin_"$dt.log
 echo Running Admin Clone Process, check log $g_log for progress...
 run_appl_clone > $g_log 2>&1
 remove_lockfile
