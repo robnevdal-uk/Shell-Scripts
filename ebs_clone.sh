@@ -113,11 +113,11 @@ user_type()
                 found_user=1
                 g_pp=`id|cut -d'(' -f2|cut -d')' -f1|sed 's/appltrn//g'`
                 g_user_type=TRN;;
-        (*ap*ple*)
-                echo "Clone Process for for PLE Appl Instance"
+        (*ap*dev*)
+                echo "Clone Process for for dev Appl Instance"
                 found_user=1
-                g_pp=`id|cut -d'(' -f2|cut -d')' -f1|sed 's/apple//g'`
-                g_user_type=PLE;;
+                g_pp=`id|cut -d'(' -f2|cut -d')' -f1|sed 's/apdev//g'`
+                g_user_type=dev;;
         (*ap*pte*)
                 echo "Clone Process for for PTE Appl Instance"
                 g_pp=`id|cut -d'(' -f2|cut -d')' -f1|sed 's/applpte//g'`
@@ -161,9 +161,9 @@ determine_base()
         then
                 g_base=/trn$g_pp/apps/RMTRN$g_pp
         fi
-        if [ $g_user_type = 'PLE' ]
+        if [ $g_user_type = 'dev' ]
         then
-                g_base=/ora/ple$g_pp/apps/RMPLE$ppnz
+                g_base=/ora/dev$g_pp/apps/RMdev$ppnz
         fi
         if [ $g_user_type = 'PTE' ]
         then
@@ -182,9 +182,9 @@ check_status()
 	stage=$2
 	if [ $status = 0 ]
 	then
-		echo "****Stage $stage completed Successfully ****"
+		echo "****Stage $stage comdevted Successfully ****"
 	else
-		echo "****Stage $stage completed but had errors, it completed with status $status.  Exiting...... ****"
+		echo "****Stage $stage comdevted but had errors, it comdevted with status $status.  Exiting...... ****"
 		remove_lockfile
 		exit $status
 	fi
@@ -281,18 +281,18 @@ point_inventory()
                         echo "inventory_loc=/trn"$g_pp"/apps/RMTRN"$g_pp"/oraInventory" > /trn"$g_pp"/apps/RMTRN"$g_pp"/oraInventory/oraInst.loc
                 fi
         fi
-        if [ $g_user_type = 'PLE' ]
+        if [ $g_user_type = 'dev' ]
         then
                 if [ $inventory = 'O' ]
                 then
-                        echo "inventory_loc=/ora/ple"$g_pp"/data/rmple"$ppnz"db/oraInventory11204" > /var/opt/oracle/oraInst.loc
+                        echo "inventory_loc=/ora/dev"$g_pp"/data/rmdev"$ppnz"db/oraInventory11204" > /var/opt/oracle/oraInst.loc
                 fi
                 if [ $inventory = 'A' ]
                 then
-                        mv /ora/ple"$g_pp"/apps/RMPLE"$ppnz"/oraInventory /ora/ple"$g_pp"/apps/RMPLE"$ppnz"/oraInventory.$dt
-                        mkdir /ora/ple"$g_pp"/apps/RMPLE"$ppnz"/oraInventory
-                        echo "inventory_loc=/ora/ple"$g_pp"/apps/RMPLE"$ppnz"/oraInventory" > /ora/ple"$g_pp"/apps/RMPLE"$ppnz"/oraInventory/oraInst.loc
-                        echo DEBUG: "inventory_loc=/ora/ple"$g_pp"/apps/RMPLE"$ppnz"/oraInventory"
+                        mv /ora/dev"$g_pp"/apps/RMdev"$ppnz"/oraInventory /ora/dev"$g_pp"/apps/RMdev"$ppnz"/oraInventory.$dt
+                        mkdir /ora/dev"$g_pp"/apps/RMdev"$ppnz"/oraInventory
+                        echo "inventory_loc=/ora/dev"$g_pp"/apps/RMdev"$ppnz"/oraInventory" > /ora/dev"$g_pp"/apps/RMdev"$ppnz"/oraInventory/oraInst.loc
+                        echo DEBUG: "inventory_loc=/ora/dev"$g_pp"/apps/RMdev"$ppnz"/oraInventory"
                 fi
 
         fi
@@ -324,10 +324,10 @@ empty_fmw_home()
 		fmw_home1=/trn$g_pp/apps/RMTRN$g_pp/fs1/FMW_Home
 		fmw_home2=/trn$g_pp/apps/RMTRN$g_pp/fs2/FMW_Home
 	fi
-        if [ $g_user_type = 'PLE' ]
+        if [ $g_user_type = 'dev' ]
 	then
-		fmw_home1=/ora/ple"$g_pp"/apps/RMPLE"$ppnz"/fs1/FMW_Home
-		fmw_home2=/ora/ple"$g_pp"/apps/RMPLE"$ppnz"/fs2/FMW_Home
+		fmw_home1=/ora/dev"$g_pp"/apps/RMdev"$ppnz"/fs1/FMW_Home
+		fmw_home2=/ora/dev"$g_pp"/apps/RMdev"$ppnz"/fs2/FMW_Home
 	fi
 	mv $fmw_home1 ${fmw_home1}_$dt	
 	mv $fmw_home2 ${fmw_home2}_$dt	
@@ -452,7 +452,7 @@ add_middle_tier_trn()
 	check_status $? "Add Node 1"
 }
 
-add_middle_tier_ple()
+add_middle_tier_dev()
 {
 	oraclesid=$ORACLE_SID
 	contextfile=$CONTEXT_FILE
@@ -460,34 +460,6 @@ add_middle_tier_ple()
 	check_status $? "Add Node 1"
 	ssh $LOGNAME@sop-pl-dsapp4 ". /home/$LOGNAME/.profile;$exe_home/appl_mt_clone_r122.sh $g_appspw $g_wls_admin $g_fs $g_appl_top $contextfile $exe_home/pairs/$oraclesid"_addnode_pairsfile_node2.txt" $oraclesid $g_base"
 	check_status $? "Add Node 2"
-}
-
-add_middle_tier_pte2()
-{
-	oraclesid=$ORACLE_SID
-	contextfile=$CONTEXT_FILE
-	ssh $LOGNAME@dwp-pt-dapp1 ". /home/$LOGNAME/.profile;$exe_home/appl_mt_clone_r122.sh $g_appspw $g_wls_admin $g_fs $g_appl_top $contextfile $exe_home/pairs/$oraclesid"_addnode_pairsfile_node1.txt" $oraclesid $g_base"
-	check_status $? "Add Node 1"
-	ssh $LOGNAME@dwp-pt-dapp2 ". /home/$LOGNAME/.profile;$exe_home/appl_mt_clone_r122.sh $g_appspw $g_wls_admin $g_fs $g_appl_top $contextfile $exe_home/pairs/$oraclesid"_addnode_pairsfile_node2.txt" $oraclesid $g_base"
-	check_status $? "Add Node 2"
-	ssh $LOGNAME@dwp-pt-dapp3 ". /home/$LOGNAME/.profile;$exe_home/appl_mt_clone_r122.sh $g_appspw $g_wls_admin $g_fs $g_appl_top $contextfile $exe_home/pairs/$oraclesid"_addnode_pairsfile_node3.txt" $oraclesid $g_base"
-	check_status $? "Add Node 3"
-	ssh $LOGNAME@dwp-pt-dapp4 ". /home/$LOGNAME/.profile;$exe_home/appl_mt_clone_r122.sh $g_appspw $g_wls_admin $g_fs $g_appl_top $contextfile $exe_home/pairs/$oraclesid"_addnode_pairsfile_node4.txt" $oraclesid $g_base"
-	check_status $? "Add Node 4"
-}
-
-add_middle_tier_pte()
-{
-	oraclesid=$ORACLE_SID
-	contextfile=$CONTEXT_FILE
-	ssh $LOGNAME@dwp-dr-napp1 ". /home/$LOGNAME/.profile;$exe_home/appl_mt_clone_r122.sh $g_appspw $g_wls_admin $g_fs $g_appl_top $contextfile $exe_home/pairs/$oraclesid"_addnode_pairsfile_node1.txt" $oraclesid $g_base"
-	check_status $? "Add Node 1"
-	ssh $LOGNAME@dwp-dr-napp2 ". /home/$LOGNAME/.profile;$exe_home/appl_mt_clone_r122.sh $g_appspw $g_wls_admin $g_fs $g_appl_top $contextfile $exe_home/pairs/$oraclesid"_addnode_pairsfile_node2.txt" $oraclesid $g_base"
-	check_status $? "Add Node 2"
-	ssh $LOGNAME@dwp-dr-napp3 ". /home/$LOGNAME/.profile;$exe_home/appl_mt_clone_r122.sh $g_appspw $g_wls_admin $g_fs $g_appl_top $contextfile $exe_home/pairs/$oraclesid"_addnode_pairsfile_node3.txt" $oraclesid $g_base"
-	check_status $? "Add Node 3"
-	ssh $LOGNAME@dwp-dr-napp4 ". /home/$LOGNAME/.profile;$exe_home/appl_mt_clone_r122.sh $g_appspw $g_wls_admin $g_fs $g_appl_top $contextfile $exe_home/pairs/$oraclesid"_addnode_pairsfile_node4.txt" $oraclesid $g_base"
-	check_status $? "Add Node 4"
 }
 
 add_middle_tier()
@@ -500,19 +472,10 @@ add_middle_tier()
         then
 		add_middle_tier_trn
         fi
-        if [ $g_user_type = 'PLE' ]
+        if [ $g_user_type = 'DEV' ]
         then
-		add_middle_tier_ple
+		add_middle_tier_dev
         fi
-        if [ $g_user_type = 'PTE' ]
-        then
-        	if [ $ORACLE_SID = 'PTE2' ]
-        	then
-			add_middle_tier_pte2
-		else
-			add_middle_tier_pte
-		fi
-	fi
 }
 
 test_apps()
